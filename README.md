@@ -1,4 +1,4 @@
-# AdventOfCode
+# Jota's Advent Of Code solutions
 
 Advent of Code challenges, years 2024+. Older solutions are in individual repos until I have patience to migrate.
 
@@ -9,3 +9,6 @@ Advent of Code challenges, years 2024+. Older solutions are in individual repos 
 [2023](https://github.com/lokijota/AdventOfCode2023) - Again coded in Pythom. Couldn't finish all by xmas, and completed the later ones the month before the 2024 edition.
 
 [2024](2024/) - Again going for Python.
+
+
+*Credit where credit is due to Eric Wastl's great work creating the [Advent of Code](https://adventofcode.com/) since 2015*
