@@ -103,7 +103,7 @@ for line in lines:
             break
         else:
             row.insert(rc, removed_el)
-            # and continue checking
+            # restore the list and continue checking
 
 result = count
 
