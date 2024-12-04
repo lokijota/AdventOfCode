@@ -83,8 +83,54 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
-# regex_expr = ".*?(?:(mul\(\d+,\d+\)).*?)+"
-# doesn't restrict 1-3 digits
+# get the convolution
+# do a bitwise xor with the different options
+
+def check_sequence(tridim_array):
+    # inspired by the idea of convolutions, I thought I'd apply rolling masks of 3x3
+    # Bumped into several annoying issues, eg np.bitwise_xor not working with strings forcing to covert then to ints
+    # anyway, could have done some optimizations but it runs in 0.14 secs so it's good enough
+
+    # print(tridim_array)
+
+    masks = [ [["M", ".", "M"],  [".", "A", "."], ["S", ".", "S"]], \
+              [["M", ".", "S"],  [".", "A", "."], ["M", ".", "S"]], \
+              [["S", ".", "M"],  [".", "A", "."], ["S", ".", "M"]], \
+              [["S", ".", "S"],  [".", "A", "."], ["M", ".", "M"]] ]
+
+    masks = np.array(masks)
+
+    # tridim_array_cp = np.copy(tridim_array)
+    tridim_array_cp = np.array([[ord(el) for el in row] for row in tridim_array])
+
+    for mask in masks:
+        mask[0,1] = tridim_array[0,1]
+        mask[1,0] = tridim_array[1,0]
+        mask[1,2] = tridim_array[1,2]
+        mask[2,1] = tridim_array[2,1]
+
+        mask = np.array([[ord(el) for el in row] for row in mask])
+
+        if np.bitwise_xor(mask, tridim_array_cp).sum() == 0:
+            return True
+
+    return False
+
+# convert list of strings into numpy array
+map = []
+for row in lines:
+    map.append([letter for letter in row])
+
+map = np.array(map,str) 
+
+# look for A's excluinding outside border
+for idxrow, row in enumerate(map[1:-1, 1:-1]):
+    # print(idxrow, row)
+    for idxcol, letter in enumerate(row):
+        if letter == "A":
+            # print (idxrow, idxcol)    
+            if check_sequence(map[idxrow:idxrow+3, idxcol:idxcol+3]):
+                result += 1
 
 print("Result part 2: ", result) #
 print("--- %s seconds ---" % (time.time() - start_time))
