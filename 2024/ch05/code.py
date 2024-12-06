@@ -46,6 +46,8 @@ for line in lines:
 start_time = time.time()
 result = 0
 
+part2_unordered = []
+
 for page in pages:
 
     correctly_ordered = True
@@ -58,7 +60,9 @@ for page in pages:
 
     if correctly_ordered == True:
         result += page[int(len(page)/2)]
-        print(f"Adding {page[int(len(page)/2)]}")
+        # print(f"Adding {page[int(len(page)/2)]}")
+    else:
+        part2_unordered.append(page)
 
 
 print("Result part 1: ", result) #
@@ -68,6 +72,35 @@ print("--- %s seconds ---" % (time.time() - start_time))
 
 start_time = time.time()
 result = 0
+
+# process the part2_unordered list here
+
+random.seed()
+for unordered in part2_unordered:
+
+   # print(unordered)
+
+   correctly_ordered = False 
+   while correctly_ordered == False:
+       # print(unordered)
+
+       correctly_ordered = True
+       for pair in pairwise(unordered):
+            if not pair in rules:
+                correctly_ordered = False
+                # print("wrong: ", pair)
+
+                if (pair[1], pair[0]) in rules:
+                    # trocar os elementos e tentar de novo
+                    del unordered[unordered.index(pair[1])]
+                    unordered.insert( unordered.index(pair[0]), pair[1])
+                    # print(f"Replaced to {unordered}")
+                break
+
+       # input("prima uma chave")
+
+   result += unordered[int(len(unordered)/2)]
+   # print(f"Unordered now ordered: Adding {unordered[int(len(unordered)/2)]}")
 
 
 print("Result part 2: ", result) #
