@@ -8,7 +8,7 @@ from tqdm import tqdm
 import random
 import matplotlib.pyplot as plt
 import numpy as np
-from itertools import pairwise
+from itertools import pairwise, product
 import math
 
 ## read data
@@ -64,6 +64,35 @@ print("--- %s seconds ---" % (time.time() - start_time))
 
 start_time = time.time()
 result = 0
+
+def generator(operator_symbols, n):
+     yield from product(*([operator_symbols] * n)) 
+
+for row in data:
+    # print(row)
+    for x in generator('+*|', len(row[1])-1):
+        operations = (''.join(x))
+
+        register = row[1][0]
+
+        for opval in zip(operations, row[1][1:]):
+            if opval[0] == "+":
+                register += opval[1]
+            elif opval[0] == "*":
+                register *= opval[1]
+            else:
+                register = int(str(register) + str(opval[1]))
+            
+            if register > row[0]:
+                break
+        
+            # print(op, register)
+        
+        if register == row[0]:
+            # print(f"found, {result}")
+            result += row[0]
+            break
+
 
 
 print("Result part 2: ", result) #
