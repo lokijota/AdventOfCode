@@ -6,4 +6,6 @@ Coding in Python 3.1, in VSCode with Vim (decided to go back to Uni days, becaus
 - Day 02: first part simple, second part just thinking of edge cases confused me. Not pretty code but works.
 - Day 03: simple challenge with regex
 - Day 04: counting XMAS/MAS in a map. First part done in a non-smart but still quick way
+- Day 05: first part very simple, used sets and pairwise. Second part slightly harder but the first naïve implementation of just swapping order worked well and is very fast. Unexpected.
+- Day 06:
 
