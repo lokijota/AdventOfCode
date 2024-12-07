@@ -37,6 +37,7 @@ map_size = map.shape[0]
 ## functions
 
 def print_map():
+    """Convenience, for debug only"""
     print("-----------")
     for row in map:
         for col in row:
@@ -46,60 +47,62 @@ def print_map():
 
 def is_it_loop(guard_row, guard_col):
     """Returns 1 if it finds a loop, returns 0 otherwise"""
+    """Code is very similar to code of part 1, but with some subtle differences specific for part 2... so yeah, duplicated"""
+    """Note to track that it's a repeated path we need to include the direction in the path, unlike in the implementation in part 1"""
 
-    possible_obstacle_positions = set()
+    the_path = set()
     direction = "^"
 
     while guard_row >= 0 and guard_row < map_size and guard_col >= 0 and guard_col < map_size:
 
         if direction == "^":
-            map[guard_row, guard_col] = "0" # visited
+            # uncomment for visualization map[guard_row, guard_col] = "0" # visited
             if guard_row > 0:
                 if map[guard_row-1, guard_col] != "#":
                     guard_row -= 1
-                    if (guard_row, guard_col, direction) in possible_obstacle_positions:
+                    if (guard_row, guard_col, direction) in the_path:
                         return 1
                     
-                    possible_obstacle_positions.add((guard_row, guard_col, direction))
+                    the_path.add((guard_row, guard_col, direction))
                 else:
                     direction = ">"
             else:
                 guard_row -= 1
         elif direction == ">":
-            map[guard_row, guard_col] = "0" # visited
+            # uncomment for visualization map[guard_row, guard_col] = "0" # visited
             if guard_col < map_size-1:
                 if map[guard_row, guard_col+1] != "#":
                     guard_col += 1
-                    if (guard_row, guard_col, direction) in possible_obstacle_positions:
+                    if (guard_row, guard_col, direction) in the_path:
                         return 1
                     
-                    possible_obstacle_positions.add((guard_row, guard_col, direction))
+                    the_path.add((guard_row, guard_col, direction))
                 else:
                     direction = "v"
             else:
                 guard_col += 1
         elif direction == "v":
-            map[guard_row, guard_col] = "0" # visited
+            # uncomment for visualization map[guard_row, guard_col] = "0" # visited
             if guard_row < map_size-1:
                 if map[guard_row+1, guard_col] != "#":
                     guard_row += 1
-                    if (guard_row, guard_col, direction) in possible_obstacle_positions:
+                    if (guard_row, guard_col, direction) in the_path:
                         return 1
                     
-                    possible_obstacle_positions.add((guard_row, guard_col, direction))
+                    the_path.add((guard_row, guard_col, direction))
                 else:
                     direction = "<"
             else:
                 guard_row += 1
         else: # if direction = "<"
-            map[guard_row, guard_col] = "0" # visited
+            # uncomment for visualization map[guard_row, guard_col] = "0" # visited
             if guard_col > 0:
                 if map[guard_row, guard_col-1] != "#":
                     guard_col -= 1
-                    if (guard_row, guard_col, direction) in possible_obstacle_positions:
+                    if (guard_row, guard_col, direction) in the_path:
                         return 1
                     
-                    possible_obstacle_positions.add((guard_row, guard_col, direction))
+                    the_path.add((guard_row, guard_col, direction))
                 else:
                     direction = "^"
             else:
@@ -113,7 +116,7 @@ def is_it_loop(guard_row, guard_col):
 start_time = time.time()
 result = 0
 
-possible_obstacle_positions = set() # set of tuples: (row, col, direction_it_was_going)
+possible_obstacle_positions = set() # set of tuples: (row, col)
 
 # The new obstruction can't be placed at the guard's starting position
 
@@ -179,7 +182,6 @@ result = 0
 # ugly but fast
 possible_obstacle_positions.discard((initial_guard_row, initial_guard_col))
 
-# first approach - brute force
 for pos in tqdm(possible_obstacle_positions):
 
     # uncomment for visualization map[map == "0"] = "."
