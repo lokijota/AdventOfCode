@@ -20,6 +20,9 @@ with open('ch05/input.txt') as f:
 
 ## parse data
 
+# notajota: could have done rules, pages = open('in.txt').read().split('\n\n') to simplify the code
+
+
 rules = set()
 pages = []
 
