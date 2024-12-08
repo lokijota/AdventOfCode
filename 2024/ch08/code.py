@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import itertools
 import math
+import operator
 
 ## read data
 
@@ -86,57 +87,36 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
+def calc_antinode(antinodes, base, dv, dh, operator):
+    """This avoids code repetition in the main loop below"""
+    while True:
+            antinode = (operator(base[0], dv), operator(base[1], dh))
+            if antinode[0] >= 0 and antinode[0]<map_size and antinode[1] >= 0 and antinode[1] < map_size:
+                antinodes.add(antinode)
+                base = antinode
+            else:
+                break
+
+    return antinodes 
+
 antinodes = set()
 for frequency in frequency_map.keys():
     for comb in itertools.combinations(frequency_map[frequency], 2):
-        # calculate distance
+        # calculate vertical and horizontal distance
         dv = comb[0][0] - comb[1][0]
         dh = comb[0][1] - comb[1][1]
-        # print(dv, dh)
 
-        base = comb[0]
-        while True:
-            antinode = (base[0]+dv,base[1]+dh)
-            if antinode[0] >= 0 and antinode[0]<map_size and antinode[1] >= 0 and antinode[1] < map_size:
-                antinodes.add(antinode)
-                base = antinode
-            else:
-                break
-
-        base = comb[1]
-        while True:
-            antinode = (base[0]+dv,base[1]+dh)
-            if antinode[0] >= 0 and antinode[0]<map_size and antinode[1] >= 0 and antinode[1] < map_size:
-                antinodes.add(antinode)
-                base = antinode
-            else:
-                break
-            
-        base = comb[0]
-        while True:
-            antinode = (base[0]-dv,base[1]-dh) #different from above
-            if antinode[0] >= 0 and antinode[0]<map_size and antinode[1] >= 0 and antinode[1] < map_size:
-                antinodes.add(antinode)
-                base = antinode
-            else:
-                break
-        
-        base = comb[1]
-        while True:
-            antinode = (base[0]-dv,base[1]-dh) #different from above
-            if antinode[0] >= 0 and antinode[0]<map_size and antinode[1] >= 0 and antinode[1] < map_size:
-                antinodes.add(antinode)
-                base = antinode
-            else:
-                break
-
-        # print(comb)
+        calc_antinode(antinodes, comb[0], dv, dh, operator.add)
+        calc_antinode(antinodes, comb[1], dv, dh, operator.add)
+        calc_antinode(antinodes, comb[0], dv, dh, operator.sub)
+        calc_antinode(antinodes, comb[1], dv, dh, operator.sub)
 
 result = len(antinodes)
+
+# mark in map just for visualization convenience
 for antinode in antinodes:
     if map[*antinode] == ".":
         map[*antinode] = "#"
-
 
 print_map()
 
