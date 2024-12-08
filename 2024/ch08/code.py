@@ -54,7 +54,7 @@ for idx_row, row in enumerate(map):
                 frequency_map[col] = [(idx_row, idx_col)]
 
 
-print(frequency_map)
+# print(frequency_map)
 
 antinodes = set()
 for frequency in frequency_map.keys():
@@ -62,7 +62,7 @@ for frequency in frequency_map.keys():
         # calculate distance
         dv = comb[0][0] - comb[1][0]
         dh = comb[0][1] - comb[1][1]
-        print(dv, dh)
+        # print(dv, dh)
 
         antinodes.add((comb[0][0]+dv,comb[0][1]+dh))
         antinodes.add((comb[1][0]-dv,comb[1][1]-dh))
@@ -86,8 +86,59 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
+antinodes = set()
+for frequency in frequency_map.keys():
+    for comb in itertools.combinations(frequency_map[frequency], 2):
+        # calculate distance
+        dv = comb[0][0] - comb[1][0]
+        dh = comb[0][1] - comb[1][1]
+        # print(dv, dh)
+
+        base = comb[0]
+        while True:
+            antinode = (base[0]+dv,base[1]+dh)
+            if antinode[0] >= 0 and antinode[0]<map_size and antinode[1] >= 0 and antinode[1] < map_size:
+                antinodes.add(antinode)
+                base = antinode
+            else:
+                break
+
+        base = comb[1]
+        while True:
+            antinode = (base[0]+dv,base[1]+dh)
+            if antinode[0] >= 0 and antinode[0]<map_size and antinode[1] >= 0 and antinode[1] < map_size:
+                antinodes.add(antinode)
+                base = antinode
+            else:
+                break
+            
+        base = comb[0]
+        while True:
+            antinode = (base[0]-dv,base[1]-dh) #different from above
+            if antinode[0] >= 0 and antinode[0]<map_size and antinode[1] >= 0 and antinode[1] < map_size:
+                antinodes.add(antinode)
+                base = antinode
+            else:
+                break
+        
+        base = comb[1]
+        while True:
+            antinode = (base[0]-dv,base[1]-dh) #different from above
+            if antinode[0] >= 0 and antinode[0]<map_size and antinode[1] >= 0 and antinode[1] < map_size:
+                antinodes.add(antinode)
+                base = antinode
+            else:
+                break
+
+        # print(comb)
+
+result = len(antinodes)
+for antinode in antinodes:
+    if map[*antinode] == ".":
+        map[*antinode] = "#"
 
 
+print_map()
 
 print("Result part 2: ", result) #
 print("--- %s seconds ---" % (time.time() - start_time))
