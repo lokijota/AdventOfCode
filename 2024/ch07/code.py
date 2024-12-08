@@ -66,11 +66,13 @@ start_time = time.time()
 result = 0
 
 def generator(operator_symbols, n):
-     yield from product(*([operator_symbols] * n)) 
+    """Generate all the combinations of operators to apply. Simple but innefficient, as it happens for every single sequence"""
+    yield from product(*([operator_symbols] * n))  #itertools.product
 
 for row in data:
     # print(row)
-    for x in generator('+*|', len(row[1])-1):
+    lr = len(row[1])-1
+    for x in generator('+*|', lr):
         operations = (''.join(x))
 
         register = row[1][0]
@@ -81,8 +83,9 @@ for row in data:
             elif opval[0] == "*":
                 register *= opval[1]
             else:
-                register = int(str(register) + str(opval[1]))
-            
+                register = int(f'{register}{opval[1]}')
+                # register = int(str(register) + str(opval[1]))
+ 
             if register > row[0]:
                 break
         
