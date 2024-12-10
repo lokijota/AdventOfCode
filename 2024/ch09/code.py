@@ -62,11 +62,14 @@ for idx, d in enumerate(data):
         file_num += 1
     disk_pointer += val
 
+disk_map_pt2 = np.copy(disk_map)
 
-def find_free_space(disk_map, starting_from):
+def find_free_space(disk_map, starting_from, max_pos = 100000):
     first_empty = np.argmax(disk_map[starting_from:]==-1) + starting_from
+    if first_empty > max_pos:
+        return -1,-1
 
-    empty_length = 0
+    empty_length = 0 
     while first_empty+empty_length < len(disk_map) and disk_map[first_empty+empty_length] == -1:
         empty_length += 1
 
@@ -116,6 +119,48 @@ start_time = time.time()
 result = 0
 
 
+file_id = file_count-1
+while file_id >= 0:
 
-print("Result part 2: ", result) #
+    # see how large the file is
+    file_pos = np.argmax(disk_map_pt2 == file_id)
+    file_len = 0
+    while file_pos+file_len < disk_size and disk_map_pt2[file_pos+file_len] == file_id:
+        file_len += 1
+
+    # find a spot with that free size
+    starting_from = 0
+    found = False
+    while found == False:
+        first_empty, empty_length = find_free_space(disk_map_pt2, starting_from, file_pos)
+        if first_empty == -1: # no free space before file_pos
+            break
+
+        if empty_length < file_len:
+            starting_from = first_empty + empty_length
+        else:
+            found = True
+
+    if found:
+        # move the file over there and mark old location as free
+        disk_map_pt2[first_empty:first_empty+file_len] = disk_map_pt2[file_pos:file_pos+file_len] 
+        disk_map_pt2[file_pos:file_pos+file_len] = -1
+        #print(f"Moved file {file_id}")
+        # np.set_printoptions(threshold=sys.maxsize, precision=0)
+        # print(disk_map_pt2.astype(int))
+    # else:
+    #     print(f"Skipped file {file_id}")
+
+    file_id -= 1
+
+
+result = 0
+for idx, val in enumerate(disk_map_pt2):
+    if val == -1:
+        continue
+    else:
+        result += (val*idx)
+
+
+print("Result part 2: ", int(result)) #
 print("--- %s seconds ---" % (time.time() - start_time))
