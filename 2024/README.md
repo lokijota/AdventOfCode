@@ -10,6 +10,7 @@ Coding in Python 3.1, in VSCode with Vim (decided to go back to Uni days, becaus
 - **Day 06**: this is the one with the guard walking around a map and finding loops. Second part runs in 8 secs, I'm sure it could be much faster.
 - **Day 07**: this is the one where there's a variable number of loops. The second part takes 16 seconds which is too long. I used an `itertools.product` to generate combinations and then just did 3 loops. This is inneficient and means that several computations are repeated for every combination, which is - I think - why it takes so long.
 - **Day 08**: Was fearing being slow but ended up not being the case, runs under 0.00x seconds. Using the right data structures made it simple, and used operator.add/sub as parameters to a function to avoid duplicated code. Harder to understand the problem statement than it was to code.
+- **Day 09**: file system defrag. Thought about doing something smart with a FAT but ended up just using a np.array and doing it brute force. First part is sub-second, second part 12.5 seconds. Nothing spectacular here.
 
 
 Also: coding in vscode using **vim**, for old-times sake.
