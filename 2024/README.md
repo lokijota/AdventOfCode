@@ -11,6 +11,8 @@ Coding in Python 3.1, in VSCode with Vim (decided to go back to Uni days, becaus
 - **Day 07**: this is the one where there's a variable number of loops. The second part takes 16 seconds which is too long. I used an `itertools.product` to generate combinations and then just did 3 loops. This is inneficient and means that several computations are repeated for every combination, which is - I think - why it takes so long.
 - **Day 08**: Was fearing being slow but ended up not being the case, runs under 0.00x seconds. Using the right data structures made it simple, and used operator.add/sub as parameters to a function to avoid duplicated code. Harder to understand the problem statement than it was to code.
 - **Day 09**: file system defrag. Thought about doing something smart with a FAT but ended up just using a np.array and doing it brute force. First part is sub-second, second part 12.5 seconds. Nothing spectacular here.
+- **Day 10**: the "smartest" thing here is just using a tuple of 5 elements including the current height, the current coordinates and the position of the 0 that started the trail. This allows to handle the repetitions of part 1 (when it converges in 8 or 9) and replace a set with a list to handle the part 2.
+- **Day 11**: happy with this one. Used hashtables to register frequencies of numbers (order is irrelevant), and both parts were solved with the same code in under 0.0x secs.
 
 
 Also: coding in vscode using **vim**, for old-times sake.
