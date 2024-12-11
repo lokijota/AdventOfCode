@@ -35,8 +35,8 @@ map = np.array(map,int)
 start_time = time.time()
 result = 0
 
-# paths = deque()
 paths = set()
+end_positions = set()
 
 # find all the starting positions: 0's and put in the queue
 
@@ -46,7 +46,6 @@ paths.update(starting_points)
 
 dim = map.shape[0]
 
-end_positions = set()
 
 while paths:
     pos = paths.pop()
@@ -69,6 +68,26 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
+# structure: current digit, where it is located, coords of where the path started
+paths = [(0, *coords, *coords) for coords in list(zip(*np.where(map==0)))]
+dim = map.shape[0]
+end_positions = []
 
+while paths:
+    pos = paths.pop() # slow as it's pop from head but fast enough
+
+    if pos[0] == 9:
+        end_positions.append(pos)
+    else:
+        # find surounding elements that have the value+1, for each of them add to the deque again
+        surrounding_positions = [ (pos[1]-1, pos[2]), (pos[1]+1, pos[2]),(pos[1], pos[2]-1),(pos[1], pos[2]+1) ]
+        surrounding_positions = [ el for el in surrounding_positions if el[0]>=0 and el[0]<dim and el[1]>=0 and el[1]<dim and map[el[0], el[1]] == pos[0]+1 ]
+
+        [paths.append((pos[0]+1, el[0], el[1], pos[3], pos[4])) for el in surrounding_positions]
+
+result = len(end_positions)
+
+# 1106 too low
+result = len(end_positions)
 print("Result part 2: ", int(result)) #
 print("--- %s seconds ---" % (time.time() - start_time))
