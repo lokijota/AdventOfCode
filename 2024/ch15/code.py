@@ -16,7 +16,7 @@ from operator import add
 
 ## global variables
 
-with open('ch15/input.txt') as f:
+with open('ch15/sample.txt') as f:
     lines = f.read().split("\n\n")
 
 ## parse data
@@ -29,6 +29,8 @@ map = np.array(map)
 
 instructions = np.array(lines[1].replace("\n", ""))
 instructions = instructions.flatten()[0]
+
+map_backup = np.copy(map) # for part 2
 
 ## functions
 
@@ -125,7 +127,6 @@ robot_pos = np.unravel_index(np.argmax(map == "@"), map.shape)
 for instruction in instructions:
     robot_pos = move_robot(map, robot_pos, instruction)
 
-
 # print(map)
 
 result = score(map)
@@ -137,6 +138,31 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
+# enlarge the map
+fat_map = []
+
+for idx_row, row in enumerate(map_backup):
+    new_row = []
+    for idx_col, val in enumerate(row):
+        if val == "#":
+            new_row.append("#")
+            new_row.append("#")
+        elif val == "O":
+            new_row.append("[")
+            new_row.append("]")
+        elif val == ".":
+            new_row.append(".")
+            new_row.append(".")
+        elif val == "@":
+            new_row.append("@")
+            new_row.append(".")
+    
+    fat_map.append(new_row)
+
+map = np.array(fat_map)
+
+with np.printoptions(threshold=np.inf, linewidth=np.inf):
+    print(map)
 
 print("Result part 2: ", int(result)) #
 print("--- %s seconds ---" % (time.time() - start_time))
