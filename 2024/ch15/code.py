@@ -16,7 +16,7 @@ from operator import add, sub
 
 ## global variables
 
-with open('ch15/input.txt') as f:
+with open('ch15/mg.txt') as f:
     lines = f.read().split("\n\n")
 
 ## parse data

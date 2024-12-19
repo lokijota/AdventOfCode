@@ -11,6 +11,7 @@ import time
 from collections import deque, Counter
 from tqdm import tqdm
 from operator import add, sub
+import networkx as nx
 
 ## read data
 
@@ -51,7 +52,7 @@ def printPath(map, path):
 
     for r in range(0, edge_len):
         for c in range(0, edge_len):
-            if [r,c] in [[node[0],node[1]] for node in path]: #path[2:]:
+            if [r,c] in [[node[0],node[1]] for node in path]: 
                 print(f"{bcolors.OKGREEN}{map[r][c]}{bcolors.ENDC}", end="")
             else:
                 print(map[r][c], end="")
@@ -93,24 +94,14 @@ class Graph(object):
         "Returns the neighbors of a node."
         connections = []
         for out_node in self.nodes:
-            # JOTA added "node in self.graph and" because of the cleanup() addition 
-            if node in self.graph and self.graph[node].get(out_node, False) != False:
+            if self.graph[node].get(out_node, False) != False:
                 connections.append(out_node)
+
         return connections
     
     def value(self, node1, node2):
         "Returns the value of an edge between two nodes."
         return self.graph[node1][node2]
-    
-
-    # JOTA adition to clean-up nodes that have no connections, from the graph and node base -- makes dijkstra faster
-    def cleanup(self):
-        # self.nodes = nodes
-        # self.graph = self.construct_graph(nodes, init_graph)
-
-        self.graph = {k: v for k, v in self.graph.items() if len(v) > 0}
-        self.nodes = [node for node in self.nodes if node in self.graph.keys()]
-        return 1
 
 def dijkstra_algorithm(graph, start_node):
     "Applies Dijkstra's shortest path algorithm"
@@ -128,7 +119,7 @@ def dijkstra_algorithm(graph, start_node):
         shortest_path[node] = max_value
     # However, we initialize the starting node's value with 0   
     shortest_path[start_node] = 0
-    
+
     # The algorithm executes until we visit all nodes
     while unvisited_nodes:
         # The code block below finds the node with the lowest score
@@ -153,13 +144,8 @@ def dijkstra_algorithm(graph, start_node):
             if tentative_value < shortest_path[neighbor]:
                 shortest_path[neighbor] = tentative_value
                 # We also update the best path to the current node
-                previous_nodes[neighbor] = current_min_node
 
-            # JOTA edit - this was an attempt at early termination but has the same result but takes more time (300 secs more for the input)
-            # if neighbor[0] == nrows -1 and neighbor[1] == ncols - 1:
-            #     print("pim achei-lo", tentative_value)
-            #     return previous_nodes, shortest_path
- 
+                previous_nodes[neighbor] = current_min_node
         # After visiting its neighbors, we mark the node as "visited"
         unvisited_nodes.remove(current_min_node)
     
@@ -179,9 +165,22 @@ def print_result(previous_nodes, shortest_path, start_node, target_node):
     
     print("We found the following best path with a value of {}.".format(shortest_path[target_node]))
     print(" -> ".join(reversed([''.join(i) for i in [str(i) for i in path]])))
-    printPath(map, path)
+    printPath(labirynth, path)
 
     return shortest_path[target_node]
+
+ninety_deg_pos = dict()
+ninety_deg_pos["N"] = [ (0, -1, "W"), (0, 1, "E") ]
+ninety_deg_pos["S"] = ninety_deg_pos["N"]
+ninety_deg_pos["E"] = [ (-1, 0, "N"), (1, 0, "S") ]
+ninety_deg_pos["W"] = ninety_deg_pos["E"]
+
+def get_available_rotation_nodes(labirynth, node):
+    if node[2] == "X": # end node, there's no escaping it
+        return []
+
+    rotated_positions = ninety_deg_pos[node[2]]
+    return [(node[0]+pos[0], node[1]+pos[1], pos[2]) for pos in rotated_positions if labirynth[(node[0]+pos[0], node[1]+pos[1])] == "."]
 
 
 ## part 1
@@ -190,9 +189,12 @@ start_time = time.time()
 result = 0
 
 start_pos = np.unravel_index(np.argmax(labirynth == "S"), labirynth.shape)
+start_pos = (start_pos[0], start_pos[1], "E")
 end_pos = np.unravel_index(np.argmax(labirynth == "E"), labirynth.shape)
+end_pos = (end_pos[0], end_pos[1], "X")
 
-# 1.0 create graph
+
+# 1.0 Create graph
 nodes = []
 init_graph = {}
 for node in nodes:
@@ -200,19 +202,75 @@ for node in nodes:
 
 for idx_row, row in enumerate(labirynth):
     for idx_col, val in enumerate(row):
-        if val in [".", "S", "E"]:
-
+        if val in [".", "S"]: # don't do this logic when it's the E node
             for surrounding in [(idx_row+direction[0], idx_col+direction[1], direction[2]) for direction in [(0,1, "E"), (0,-1, "W"), (1,0, "S"), (-1, 0, "N") ]]:
-                if labirynth[surrounding[0], surrounding[1]] == ".":
-                    nodes.append((idx_row, idx_col, surrounding[2]))
-                    init_graph[(idx_row, idx_col, surrounding[2])] = {}
-                    print("Added: ", (idx_row, idx_col, surrounding[2]))
+                nodes.append((idx_row, idx_col, surrounding[2]))
+                init_graph[(idx_row, idx_col, surrounding[2])] = {}
+        elif val == "E":
+            nodes.append((idx_row, idx_col, "X")) # x marks the spot -- the ending
+            init_graph[(idx_row, idx_col, "X")] = {}
 
 print(f"Nb of Nodes: {len(init_graph)}, start pos = {start_pos}, end pos = {end_pos}")
 
-# 2.0 
+# 2.0 Add edges
 
-print("Result part 1: ", result) #
+edge_count = 0
+nx_edges = []
+
+def shorten(node):
+    return f"{node[0]}.{node[1]}{node[2]}"
+
+for node in nodes:
+    for surrounding in [(node[0]+direction[0], node[1]+direction[1], direction[2]) for direction in [(0,1, "E"), (0,-1, "W"), (1,0, "S"), (-1, 0, "N") ]]:
+        if labirynth[surrounding[0], surrounding[1]] == ".": # and surrounding not in init_graph[node]:
+            if node[2] == surrounding[2]: # pointing in the same direction, just connect with weight 1
+                init_graph[node][surrounding] = 1 # weight of moving in a straight line
+                # nx_edges.append((shorten(node), shorten(surrounding)))
+                edge_count += 1
+            elif len(rotated_90_degrees_nodes := get_available_rotation_nodes(labirynth, node))>0:
+                for rotated_node in rotated_90_degrees_nodes:
+                    init_graph[node][rotated_node] = 1001
+                    # nx_edges.append((shorten(node), shorten(rotated_node)))
+                    edge_count += 1
+
+        elif labirynth[surrounding[0], surrounding[1]] == "E":
+            if node[2] == surrounding[2]: # pointing in the same direction, just connect with weight 1
+                init_graph[node][end_pos] = 1 # weight of moving in a straight line
+                nx_edges.append((shorten(node), shorten(end_pos)))
+                edge_count += 1
+            elif len(rotated_90_degrees_nodes := get_available_rotation_nodes(labirynth, node))>0:
+                for rotated_node in rotated_90_degrees_nodes:
+                    init_graph[node][end_pos] = 1001
+                    nx_edges.append((shorten(node), shorten(end_pos)))
+                    edge_count += 1
+    
+    # print(f"Node {node} is now connected to {init_graph[node]}")
+
+# For visualization but it doesn't really work
+# instantiate a nx.Graph object
+# G = nx.DiGraph()
+# G.add_edges_from(nx_edges)
+# options = {
+#     'node_color': 'red',
+#     'node_size': 5,
+#     'width': 2,
+#     'edge_color': 'green',
+#     'font_size': 11
+# }
+
+# subax1 = plt.subplot(111) # the figure has 1 row, 1 columns, and this plot is the first plot.
+# fig = plt.figure(1, figsize=(2000, 1000), dpi=60)
+# nx.draw(G, with_labels=True, font_weight='normal', **options)
+# plt.show()
+                
+print(f"Nb of edges: {edge_count}")
+
+graph = Graph(nodes, init_graph)
+previous_nodes, shortest_path = dijkstra_algorithm(graph=graph, start_node=start_pos)
+
+print_result(previous_nodes, shortest_path, start_node=start_pos, target_node=end_pos)
+
+print("Result part 1: ", result) #91464 in 123.4 seconds
 print("--- %s seconds ---" % (time.time() - start_time))
 
 ## part 2
