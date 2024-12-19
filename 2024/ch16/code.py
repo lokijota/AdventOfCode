@@ -12,6 +12,7 @@ from collections import deque, Counter
 from tqdm import tqdm
 from operator import add, sub
 import networkx as nx
+from networkx import all_shortest_paths, shortest_path, shortest_path_length
 
 ## read data
 
@@ -142,10 +143,19 @@ def dijkstra_algorithm(graph, start_node):
 
             tentative_value = shortest_path[current_min_node] + graph.value(current_min_node, neighbor)
             if tentative_value < shortest_path[neighbor]:
+                ### NOTAJOTA: ^^^ this is probably key for the alternative shortest paths --------
                 shortest_path[neighbor] = tentative_value
                 # We also update the best path to the current node
 
                 previous_nodes[neighbor] = current_min_node
+            elif tentative_value == shortest_path[neighbor]:
+                # notajota: for the sample, this prints out 5 cases. the solution has 4 alternative paths really, and in different splits
+                # still this should be key, no? maybe a solution would be to remove the next node of the "best" solution, and then calculate
+                # again without it to see what happened and if it led to a path with the same length. and keep doing -- if the lenggth is equal, ofc
+                # until all have been verified. not efficient I'm sure, with the size of the big map taking already 120 seconds.
+                # so if I could optimize that, it would be advantageous
+                print("Found equal distance, ", tentative_value, " with neighbour ", neighbor, "current min node:", current_min_node)
+
         # After visiting its neighbors, we mark the node as "visited"
         unvisited_nodes.remove(current_min_node)
     
@@ -165,6 +175,7 @@ def print_result(previous_nodes, shortest_path, start_node, target_node):
     
     print("We found the following best path with a value of {}.".format(shortest_path[target_node]))
     print(" -> ".join(reversed([''.join(i) for i in [str(i) for i in path]])))
+    print(f"Number of nodes visited: {len(path)}")
     printPath(labirynth, path)
 
     return shortest_path[target_node]
@@ -217,39 +228,59 @@ print(f"Nb of Nodes: {len(init_graph)}, start pos = {start_pos}, end pos = {end_
 edge_count = 0
 nx_edges = []
 
-def shorten(node):
-    return f"{node[0]}.{node[1]}{node[2]}"
-
 for node in nodes:
     for surrounding in [(node[0]+direction[0], node[1]+direction[1], direction[2]) for direction in [(0,1, "E"), (0,-1, "W"), (1,0, "S"), (-1, 0, "N") ]]:
         if labirynth[surrounding[0], surrounding[1]] == ".": # and surrounding not in init_graph[node]:
             if node[2] == surrounding[2]: # pointing in the same direction, just connect with weight 1
                 init_graph[node][surrounding] = 1 # weight of moving in a straight line
-                # nx_edges.append((shorten(node), shorten(surrounding)))
+                nx_edges.append((node, surrounding)) # pt2
                 edge_count += 1
             elif len(rotated_90_degrees_nodes := get_available_rotation_nodes(labirynth, node))>0:
                 for rotated_node in rotated_90_degrees_nodes:
                     init_graph[node][rotated_node] = 1001
-                    # nx_edges.append((shorten(node), shorten(rotated_node)))
+                    nx_edges.append((node, rotated_node)) # pt2
                     edge_count += 1
 
         elif labirynth[surrounding[0], surrounding[1]] == "E":
             if node[2] == surrounding[2]: # pointing in the same direction, just connect with weight 1
                 init_graph[node][end_pos] = 1 # weight of moving in a straight line
-                nx_edges.append((shorten(node), shorten(end_pos)))
+                nx_edges.append((node, end_pos)) # pt2
                 edge_count += 1
             elif len(rotated_90_degrees_nodes := get_available_rotation_nodes(labirynth, node))>0:
                 for rotated_node in rotated_90_degrees_nodes:
                     init_graph[node][end_pos] = 1001
-                    nx_edges.append((shorten(node), shorten(end_pos)))
+                    nx_edges.append((node, end_pos)) # pt2
                     edge_count += 1
     
     # print(f"Node {node} is now connected to {init_graph[node]}")
 
+print(f"Nb of edges: {edge_count}")
+
+graph = Graph(nodes, init_graph)
+
+# takes 120 seconds in the main input:
+previous_nodes, shortest_path_dj = dijkstra_algorithm(graph=graph, start_node=start_pos)
+print_result(previous_nodes, shortest_path_dj, start_node=start_pos, target_node=end_pos)
+
+print("Result part 1: ", result) #91464 in 123.4 seconds
+print("--- %s seconds ---" % (time.time() - start_time))
+
+## part 2
+
+start_time = time.time()
+result = 0
+
+# Note: this feels like cheating, usign networkx to do this. I also don't understand how this can be so much faster (0.11 secs),
+# while the above Python code takes 120s to find a single shortest path. I feel dirty.
+
+def nx_edge_weights(source_node, target_node, edge_attributes):
+    """ Required to set the weights for the nx.all_shortest_paths function """
+    return init_graph[source_node][target_node]
+
 # For visualization but it doesn't really work
 # instantiate a nx.Graph object
-# G = nx.DiGraph()
-# G.add_edges_from(nx_edges)
+G = nx.DiGraph()
+G.add_edges_from(nx_edges)
 # options = {
 #     'node_color': 'red',
 #     'node_size': 5,
@@ -262,21 +293,16 @@ for node in nodes:
 # fig = plt.figure(1, figsize=(2000, 1000), dpi=60)
 # nx.draw(G, with_labels=True, font_weight='normal', **options)
 # plt.show()
-                
-print(f"Nb of edges: {edge_count}")
+paths = nx.all_shortest_paths(G, start_pos, end_pos, weight=nx_edge_weights, method='dijkstra')
+visited_tiles = set()
 
-graph = Graph(nodes, init_graph)
-previous_nodes, shortest_path = dijkstra_algorithm(graph=graph, start_node=start_pos)
+for path in paths:
+    for tile in path:
+        visited_tiles.add((tile[0], tile[1]))
 
-print_result(previous_nodes, shortest_path, start_node=start_pos, target_node=end_pos)
+# print(visited_tiles)
 
-print("Result part 1: ", result) #91464 in 123.4 seconds
-print("--- %s seconds ---" % (time.time() - start_time))
+result = len(visited_tiles)
 
-## part 2
-
-start_time = time.time()
-result = 0
-
-print("Result part 2: ", int(result)) #1453087
+print("Result part 2: ", int(result)) # 494
 print("--- %s seconds ---" % (time.time() - start_time))
