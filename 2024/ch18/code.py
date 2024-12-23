@@ -127,7 +127,7 @@ def dijkstra_algorithm(graph, start_node):
         current_min_node = None
         for node in unvisited_nodes: # Iterate over the nodes
             if current_min_node == None:
-                current_min_node = node
+                current_min_node = node # the node we happen to be looking at
             elif shortest_path[node] < shortest_path[current_min_node]:
                 current_min_node = node
                 
@@ -180,15 +180,12 @@ start_time = time.time()
 result = 0
 
 # make all the pieces drop and put them on the map
-drop_locations = []
 marked_positions = 0
-for line in lines:
+for line in lines[:count_drops]:
     drop_location = tuple([int(s) for s in line.split(",")])
-    drop_locations.append(drop_location)
 
-    if marked_positions < count_drops: 
-        grid[drop_location[1], drop_location[0]] = '#'
-        marked_positions += 1
+    grid[drop_location[1], drop_location[0]] = '#' #r,c
+    marked_positions += 1
 
 printgrid(grid)
 
@@ -199,16 +196,14 @@ init_graph = {}
 for node in nodes:
     init_graph[node] = {}
 
+# nodes
 for idx_row, row in enumerate(grid):
     for idx_col, val in enumerate(row):
         if val == ".":
-            for surrounding in [(idx_row+direction[0], idx_col+direction[1]) for direction in [(0,1), (0,-1), (1,0), (-1, 0) ]]:
-                if surrounding[0] >= 0 and surrounding[1] >= 0 and surrounding[0] < grid.shape[0] and surrounding[1] < grid.shape[0] \
-                    and grid[surrounding] != "#":
-                    nodes.append((idx_row, idx_col))
-                    init_graph[(idx_row, idx_col)] = {}
-
-
+            nodes.append((idx_row, idx_col))
+            init_graph[(idx_row, idx_col)] = {}
+        
+# edges
 edge_count = 0
 for node in nodes:
     for surrounding in [(node[0]+direction[0], node[1]+direction[1]) for direction in [(0,1), (0,-1), (1,0), (-1, 0) ]]:
@@ -226,7 +221,7 @@ result = print_result(previous_nodes, shortest_path_dj, start_node=(0,0), target
 
 # printPath(grid, shortest_path_dj)
 
-print("Result part 1: ", int(result)) # 432 in 13 seconds
+print("Result part 1: ", int(result)) # 432 in 1.5 seconds after adding code to avoid adding repeated nodes to the nodes list (stupid mistake)
 print("--- %s seconds ---" % (time.time() - start_time))
 
 ## part 2
@@ -234,7 +229,34 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
+# make all the remaining pieces drop and put them on the map
+for line in lines[count_drops:]:
+    drop_location = tuple([int(s) for s in line.split(",")]) #x,y
+    drop_location = (drop_location[1], drop_location[0]) #r,c
 
+    grid[drop_location] = '#'
+    marked_positions += 1
 
-print("Result part 2: ", int(result)) 
+    # if we added a stone that means we have to remove connections to and from it
+    nodes.remove(drop_location)
+
+    del init_graph[drop_location] 
+    for k,v in init_graph.items():
+        if drop_location in v.values():
+            del v[drop_location]
+            edge_count -= 1
+
+    print("Deleted ", drop_location, ", marked positions: ", marked_positions)
+    print(f"  Nb of Nodes: {len(init_graph)}, nb of Edges: {edge_count}")
+
+    graph = Graph(nodes, init_graph)
+    previous_nodes, shortest_path_dj = dijkstra_algorithm(graph=graph, start_node=(0,0))
+    if end_pos not in previous_nodes:
+        result = (drop_location[1], drop_location[0])
+        print(">>> No path to target after removing ", result)
+        break
+
+# Result part 2:  (56, 27)
+# --- 1306.9152591228485 seconds ---
+print("Result part 2: ", result)
 print("--- %s seconds ---" % (time.time() - start_time))
