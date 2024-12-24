@@ -147,8 +147,6 @@ def dijkstra_algorithm(graph, start_node):
                 # We also update the best path to the current node
 
                 previous_nodes[neighbor] = current_min_node
-            # elif tentative_value == shortest_path[neighbor]:
-            #     print("Found equal distance, ", tentative_value, " with neighbour ", neighbor, "current min node:", current_min_node)
 
         # After visiting its neighbors, we mark the node as "visited"
         unvisited_nodes.remove(current_min_node)
