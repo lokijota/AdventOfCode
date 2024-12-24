@@ -27,6 +27,7 @@ patterns = lines[1].split("\n")
 ## functions and classes
 
 def find_pattern(pattern, towels, dead_ends = []):
+    """ Had to use the dead_ends list as it seemed to be in a semi-endless loop testing useless combinations """
     if len(pattern) == 0:
         return True
     elif pattern in dead_ends:
@@ -38,6 +39,27 @@ def find_pattern(pattern, towels, dead_ends = []):
 
     dead_ends.append(pattern)
     return False
+
+def count_patterns(pattern, towels, dead_ends = []):
+    """ Had to use the dead_ends list as it seemed to be in a semi-endless loop testing useless combinations """
+    if len(pattern) == 0:
+        return 1
+    elif pattern in cache:
+        return cache[pattern]
+    elif pattern in dead_ends:
+        return 0
+    
+    loop_sum = 0
+    for towel in towels:
+        if pattern.startswith(towel):
+            loop_sum += count_patterns(pattern[len(towel):], towels, dead_ends)
+
+    cache[pattern] = loop_sum
+
+    if loop_sum == 0:
+        dead_ends.append(pattern)
+
+    return loop_sum
 
 ## part 1
 
@@ -59,5 +81,14 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
+cache = dict()
+
+count = 0
+for pattern in patterns:
+    count += 1
+    result += count_patterns(pattern, towels, [])
+    # print("Current count: ", result, "of", count)
+
+# 601201576113503
 print("Result part 2: ", result)
 print("--- %s seconds ---" % (time.time() - start_time))
