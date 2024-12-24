@@ -17,7 +17,7 @@ from tqdm import tqdm
 
 ## global variables
 
-with open('ch20/input.txt') as f:
+with open('ch20/sample.txt') as f:
     lines = f.read().splitlines()
 
 ## parse data
@@ -70,6 +70,43 @@ def find_cheats(pos, prev_path, future_path):
     
     return cheats
 
+def print_map(grid):
+    for rows in grid:
+        for val in rows:
+            print(val, end="")
+        print()
+
+
+def region_grow(current_pos, past_path, future_path, max_radius, region):
+    """ returns the positions """
+    if grid[current_pos] == "." or max_radius == -1:
+        print("  skipped", current_pos)
+        return region
+
+    if grid[current_pos] != "S":
+        print("  added", current_pos)
+        region.add(current_pos)
+
+    # find the surrounding positions within map
+    surrounding_positions = [(current_pos[0]+x[0], current_pos[1]+x[1]) for x in [(1,0), (-1,0), (0,-1), (0,1)]]
+
+    # remove the ones already visited
+    surrounding_positions = set(surrounding_positions)-region
+
+    for surrounding_position in surrounding_positions:
+        if surrounding_position[0] > 0 and surrounding_position[1] > 0 and \
+            surrounding_position[0] < grid.shape[0]-1 and surrounding_position[1] < grid.shape[1]-1 and \
+            grid[surrounding_position] == "#" and max_radius >= 0:
+
+            print("region grow from", surrounding_position, "radius is", max_radius-1)
+            rad = max_radius-1
+            region_grow(surrounding_position, past_path, future_path, rad, region)
+        else:
+            print("not region growing from", surrounding_position, "radius is already", max_radius)
+
+
+    return region
+
 ## part 1
 
 start_time = time.time()
@@ -108,6 +145,27 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
+region = set()
+region_grow(start_pos, path, [], 3, region)
+
+print(len(region))
+print_map(grid)
+print()
+
+for pos in region:
+    grid[pos] = "X"
+
+
+print_map(grid)
+# print(region)
+
+# cheats are a radius of manhattan distance? or only over walls? or... region grow on walls under manhattan distance?
+
+# similar logic to above:
+# do region growing starting on the current point, for "#" (and excluding edges)
+# only grow if manhattan distance under the radius-1
+# after having the region, check if it's in an edge and on the other side is the future path
+# in this case, there's a possible jump here
 
 print("Result part 2: ", result)
 print("--- %s seconds ---" % (time.time() - start_time))
