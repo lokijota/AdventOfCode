@@ -78,34 +78,24 @@ def print_map(grid):
 
 
 def region_grow(current_pos, past_path, future_path, max_radius, region):
-    """ returns the positions """
-    if grid[current_pos] == "." or max_radius == -1:
-        print("  skipped", current_pos)
-        return region
+    """ returns the region surrounding the current pos composed of #/walls """
+    if grid[current_pos] == ".":
+        return 
 
     if grid[current_pos] != "S":
-        print("  added", current_pos)
         region.add(current_pos)
 
     # find the surrounding positions within map
     surrounding_positions = [(current_pos[0]+x[0], current_pos[1]+x[1]) for x in [(1,0), (-1,0), (0,-1), (0,1)]]
 
-    # remove the ones already visited
-    surrounding_positions = set(surrounding_positions)-region
-
     for surrounding_position in surrounding_positions:
         if surrounding_position[0] > 0 and surrounding_position[1] > 0 and \
             surrounding_position[0] < grid.shape[0]-1 and surrounding_position[1] < grid.shape[1]-1 and \
-            grid[surrounding_position] == "#" and max_radius >= 0:
+            grid[surrounding_position] == "#" and max_radius > 0:
 
-            print("region grow from", surrounding_position, "radius is", max_radius-1)
-            rad = max_radius-1
-            region_grow(surrounding_position, past_path, future_path, rad, region)
-        else:
-            print("not region growing from", surrounding_position, "radius is already", max_radius)
+            region_grow(surrounding_position, past_path, future_path, max_radius-1, region)
 
-
-    return region
+    return
 
 ## part 1
 
