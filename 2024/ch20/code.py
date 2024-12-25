@@ -17,7 +17,7 @@ from tqdm import tqdm
 
 ## global variables
 
-with open('ch20/sample.txt') as f:
+with open('ch20/input.txt') as f:
     lines = f.read().splitlines()
 
 ## parse data
@@ -48,6 +48,8 @@ def find_path(start_pos, end_pos, path=[]):
     return path
 
 def find_cheats(pos, prev_path, future_path):
+    """ Find possble cheats for part 1 """
+
     cheats = []
 
     for surrounding in [(pos[0]+dir[0], pos[1]+dir[1], pos[0]+dir[2], pos[1]+dir[3] ) for dir in [(0,1,0,2), (0,-1, 0, -2), (1,0, 2, 0), (-1, 0, -2, 0) ]]:
@@ -70,19 +72,34 @@ def find_cheats(pos, prev_path, future_path):
     
     return cheats
 
-def print_map(grid):
-    for rows in grid:
-        for val in rows:
-            print(val, end="")
+# move to helper
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+def print_map(grid, path=[]):
+    for idx_row, rows in enumerate(grid):
+        for idx_col, val in enumerate(rows):
+            if (idx_row, idx_col) in path:
+                print(f"{bcolors.OKGREEN}O{bcolors.ENDC}", end="")
+            else:
+                print(val, end="")
         print()
 
 
 def region_grow(current_pos, past_path, future_path, max_radius, region):
     """ returns the region surrounding the current pos composed of #/walls """
-    if grid[current_pos] == ".":
-        return 
+    # if grid[current_pos] == ".":
+    #     return 
 
-    if grid[current_pos] != "S":
+    if grid[current_pos] in ["#", "E"]: # != "S":
         region.add(current_pos)
 
     # find the surrounding positions within map
@@ -96,6 +113,59 @@ def region_grow(current_pos, past_path, future_path, max_radius, region):
             region_grow(surrounding_position, past_path, future_path, max_radius-1, region)
 
     return
+
+def region_grow_by_distance(pos, distance):
+    """ used for part 2, does region grow to select all the positions inside a losange defined with manhattan distance (20 as per problem statement) """
+
+    region = set()
+    # region.add(pos) # un-needed - jota: remove it's from old code
+
+    for manhattan in range(1,distance+1):
+        for row in range(pos[0]-manhattan, pos[0]+manhattan+1):
+
+            if row < 1 or row >= grid.shape[0]-1:
+                continue
+
+            lower_limit = pos[1]
+            upper_limit = pos[1]
+
+            if row <= pos[0]:
+                lower_limit += - (pos[0]-row) + manhattan
+                upper_limit += + (pos[0]-row) - manhattan
+                # lower_limit += pos[1] - (pos[0]-row) + manhattan
+                # upper_limit += pos[1] + (pos[0]-row) - manhattan
+            else:
+                lower_limit += - (row-pos[0]) + manhattan 
+                upper_limit += (row-pos[0]) - manhattan
+
+            for col in [lower_limit, upper_limit]:
+                if col > 0 and col < grid.shape[1]-1: #row>0 and row<grid.shape[0]-1 and 
+                    region.add((row,col))
+ 
+    return region
+
+def find_cheats_pt2(pos, prev_path, future_path):
+    """ Find possble cheats for part 2 """
+
+    region = region_grow_by_distance(pos, 20)
+    lenpp = len(prev_path)
+    lenfp = len(future_path)
+
+    # find cheats from any of the possible starting points in the above region
+    cheats = []
+
+    for region_pos in region:
+        if grid[region_pos] in [".", "E"] and region_pos not in prev_path:
+            
+            # look for the index of the current position in the future path
+            pos_in_future_path = [idx for idx, val in enumerate(future_path) if val == region_pos]
+
+            manhattan_distance_to_pos = abs(pos[0]-region_pos[0]) + abs(pos[1]-region_pos[1])
+
+            path_len_with_cheat = lenpp + lenfp - pos_in_future_path[0] - 1 + manhattan_distance_to_pos
+            cheats.append((region_pos[0], region_pos[1], path_len_with_cheat)) 
+
+    return cheats
 
 ## part 1
 
@@ -135,27 +205,25 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
-region = set()
-region_grow(start_pos, path, [], 3, region)
+# now test all the positions of the path and see if we can cheat
+savings = dict()
 
-print(len(region))
-print_map(grid)
-print()
+for idx, pos in enumerate(path):
+    cheats = find_cheats_pt2(pos, path[0:idx+1], path[idx:])
+    print("At step", idx, "of pass, there are # cheats:", len(cheats))
 
-for pos in region:
-    grid[pos] = "X"
+    for c in cheats:
+        saving = len(path) - c[2]
+        if saving >= 100:
+            result += 1
+        # if saving not in savings:
+        #     savings[saving] = 0
+        # savings[saving] += 1
 
+# for k,v in savings.items():
+#     if k >= 100:
+#         result += v
 
-print_map(grid)
-# print(region)
-
-# cheats are a radius of manhattan distance? or only over walls? or... region grow on walls under manhattan distance?
-
-# similar logic to above:
-# do region growing starting on the current point, for "#" (and excluding edges)
-# only grow if manhattan distance under the radius-1
-# after having the region, check if it's in an edge and on the other side is the future path
-# in this case, there's a possible jump here
-
+# 1008040 in 569 seconds
 print("Result part 2: ", result)
 print("--- %s seconds ---" % (time.time() - start_time))
