@@ -94,6 +94,9 @@ for key, value in pc_connections.items():
 
                     results.add(frozenset(pc_trio))
 
+# note: frozensets are used as elements of a set. as they are sets, by adding to a set, repetitions are not allowed,
+# which is what I want as due to the process above some sets will be found more than once
+
 result = len(results)
 print("Result part 1: ", result) # 1119 in 0.029 seconds
 print("--- %s seconds ---" % (time.time() - start_time))
@@ -103,7 +106,31 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
+result_set = set()
+largest = None
+max_size = 3 # ignore clusters of size 3 or less
 
+for key, value in pc_connections.items():
+    for cluster_size_N in range(len(value), max_size, -1): # note the max_size. This cuts down the search space/time significantly
+        for pc_cluster in itertools.combinations(value, cluster_size_N):
+
+            found = True
+            for head_pc in pc_cluster:
+                if len(pc_connections[head_pc].intersection(pc_cluster)) != cluster_size_N:
+                    found = False
+                    break
+
+            if found == True and cluster_size_N > max_size: 
+                print("Found new largest with len ", cluster_size_N)
+                max_size = cluster_size_N
+                largest = pc_cluster
+                break
+
+result_cluster = list(largest)
+result_cluster.sort()
+result = ",".join(result_cluster)
+
+# av,fr,gj,hk,ii,je,jo,lq,ny,qd,uq,wq,xc in 0.013 secs
 print("Result part 2: ", result)
 print("--- %s seconds ---" % (time.time() - start_time))
 
