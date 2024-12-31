@@ -106,7 +106,6 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
-result_set = set()
 largest = None
 max_size = 3 # ignore clusters of size 3 or less
 
