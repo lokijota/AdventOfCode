@@ -14,5 +14,11 @@ Coding in Python 3.1, in VSCode with Vim (decided to go back to Uni days, becaus
 - **Day 10**: the "smartest" thing here is just using a tuple of 5 elements including the current height, the current coordinates and the position of the 0 that started the trail. This allows to handle the repetitions of part 1 (when it converges in 8 or 9) and replace a set with a list to handle the part 2.
 - **Day 11**: happy with this one. Used hashtables to register frequencies of numbers (order is irrelevant), and both parts were solved with the same code in under 0.0x secs.
 
+...
+
+- **Day 24**: This was the binary adder one. Solved it visually using a library to help with visualization, after a lot of data exploration. Frustrated I didn't solve it with code.
+- **Day 25**: Trivial, just one part
+
+The hardest one for me this year was probably the robots-pressing-keyboards one. My brain got into inception and it was hard to think about it. In the end it runs fast, even if with too much code.
 
 Also: coding in vscode using **vim**, for old-times sake.
