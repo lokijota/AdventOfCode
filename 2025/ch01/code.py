@@ -1,4 +1,10 @@
+import sys
 import time
+#sys.path.append("/Users/joao.martins/Documents/PROJECTOS/AdventOfCode/2025")
+# assuming jotalibrary.py is in the same directory / for the code to work we run the python from the top level directory
+sys.path.append(".") 
+from jotalibrary import *
+
 # from collections import deque, Counter
 # import sys
 # import numpy as np
