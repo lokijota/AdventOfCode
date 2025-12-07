@@ -61,13 +61,13 @@ for row_idx in range(nrows):
             # print("At ", row_idx, col_idx)
             # print(counts[1:-1,1:-1])
         else: 
-            counts[row_idx+1][col_idx+1] = 6
+            counts[row_idx+1][col_idx+1] = 50
 
             # print(counts)
 # second, count (ignoring the borders)
 result = (counts[1:-1,1:-1] < 4).sum() 
 
-print("Result part 1: ", result) # 1
+print("Result part 1: ", result) # 1495
 print("--- %s seconds ---" % (time.time() - start_time))
 
 ## part 2
@@ -75,7 +75,41 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
+# print(counts[1:-1,1:-1])
+rolls_removed = 0
+itemindex = np.where(counts[1:-1,1:-1] < 4)
 
+while len(itemindex[0]) > 0:
 
-print("Result part 2: ", result) # 
+    for rollnb in range(len(itemindex[0])):
+        row_idx = itemindex[0][rollnb]
+        col_idx = itemindex[1][rollnb]
+
+        # print("Removing at ", row_idx, col_idx)
+        uprow = row_idx-1+1
+        downrow = row_idx+1+1
+        leftcol = col_idx-1+1
+        rightcol = col_idx+1+1
+
+        # print("Before removal on:", row_idx, col_idx)
+        # print(counts)
+
+        counts[uprow][leftcol] -= 1
+        counts[uprow][col_idx+1] -= 1
+        counts[uprow][rightcol] -= 1
+        counts[row_idx+1][leftcol] -= 1
+        counts[row_idx+1][col_idx+1] = 50  # mark as removed
+        counts[row_idx+1][rightcol] -= 1
+        counts[downrow][leftcol] -= 1
+        counts[downrow][col_idx+1] -= 1
+        counts[downrow][rightcol] -= 1
+
+        # print("After removal:")
+        # print(counts)
+        
+    rolls_removed += len(itemindex[0])
+    itemindex = np.where(counts[1:-1,1:-1] < 4)
+
+result = rolls_removed
+print("Result part 2: ", result) # 8768
 print("--- %s seconds ---" % (time.time() - start_time))
