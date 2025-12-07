@@ -8,7 +8,11 @@ Setup steps:
 
 - Installed as per guidance on `uv` docs.
 - Created a folder for AOC 2025 and cd'd into it
+- Updated the contents of `pyproject.toml`
 - `uv init` to create the project in the current
+- `uv add numpy` to add python packages
+- `source .venv/bin/activate` to activate the environment (needed before running the code)
+- If there is an error with Vs Code not using the right Python environment, do: View > Command Pallete > Python: Select Interpreter.
 
 # Notes on the execises
 
