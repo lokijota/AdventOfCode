@@ -1,12 +1,19 @@
 # Advent Of Code 2025
 
-Coding in Python 3.14.0. Trying uv (https://docs.astral.sh/uv/) as a package manager. After instalation, 
+Coding in Python 3.14.0. Trying uv (https://docs.astral.sh/uv/) as a package manager. 
 
 # uv
 
+Setup steps:
+
+- Installed as per guidance on `uv` docs.
 - Created a folder for AOC 2025 and cd'd into it
 - `uv init` to create the project in the current
 
-- **Day 01**: 
+# Notes on the execises
+
+- **Day 01**: Simple, with modulus calculations
+- **Day 02**: Simple, they key thing here for part 2 was to use an auxiliary structure to note where to search for repeated sequences. Could be faster, but even so it's under 2 secs.
+- **Day 03**: Did a first implementation that did loops, but this didn't work for the second part. Final implementation is fast for both cases (same code, one variable configuration is different), and essentially uses the max of a progressing slice to find each of the highest digits. A few ms run-time for both cases.
 
 Also: coding in vscode using **vim**, for old-times sake.
