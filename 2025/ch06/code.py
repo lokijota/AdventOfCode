@@ -7,6 +7,7 @@ from jotalibrary import *
 from itertools import groupby
 import numpy as np
 from collections import deque 
+import math
 # from collections import Counter
 # import sys
 # import re
@@ -20,25 +21,14 @@ from collections import deque
 
 ## global variables
 
-with open('ch05/input.txt') as f:
+with open('ch06/input.txt') as f:
     lines = f.read().splitlines()
 
-id_ranges = []
-ingredient_ids = []
+operands = [line.split() for line in lines[:-1]]
+operands = [[int(el) for el in i] for i in operands]
+operands_matrix = np.array(operands)
 
-processing_ranges = True
-for line in lines:
-    if line == "":
-        processing_ranges = False
-        continue
-
-    if processing_ranges:
-        id_ranges.append([int(x) for x in line.split("-")])
-    else: 
-        ingredient_ids.append(int(line))
-
-print(id_ranges)
-print(ingredient_ids)
+operators = lines[-1].split()
 
 ## functions
 
@@ -47,13 +37,13 @@ print(ingredient_ids)
 start_time = time.time()
 result = 0
 
-for ingredient_id in ingredient_ids:
-    for id_range in id_ranges:
-        if ingredient_id >= id_range[0] and ingredient_id <= id_range[1]:
-            result += 1
-            break
+for operator_idx in range(len(operators)):
+    if operators[operator_idx] == "+":
+        result += np.sum(operands_matrix[:, operator_idx])
+    else:
+        result += math.prod(operands_matrix[:, operator_idx])
 
-print("Result part 1: ", result) # 664
+print("Result part 1: ", result) # 4693159084994
 print("--- %s seconds ---" % (time.time() - start_time))
 
 ## part 2
@@ -61,30 +51,7 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
-id_ranges_merged = []
 
-print(id_ranges)
-id_ranges = sorted(id_ranges, key=lambda x: x[0])
-print(id_ranges)
 
-id_queue = deque(id_ranges)
-
-while id_queue:
-    current_range = id_queue.popleft()
-
-    while id_queue:
-        next_range = id_queue[0]
-        if current_range[1] < next_range[0]:
-            id_ranges_merged.append(current_range)
-            break
-        else:
-            current_range[1] = max(current_range[1], next_range[1])
-            id_queue.popleft()
-
-    if not id_queue:
-        id_ranges_merged.append(current_range)
-    
-result = sum([r[1] - r[0] + 1 for r in id_ranges_merged])
-
-print("Result part 2: ", result)  # 350780324308385
+print("Result part 2: ", result)  # 
 print("--- %s seconds ---" % (time.time() - start_time))
