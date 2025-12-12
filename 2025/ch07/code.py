@@ -45,7 +45,7 @@ while row < len(lines):
     next_tachion_cols = set()
 
     for tachion_col in tachion_cols:
-        print(tachion_col)
+        # print(tachion_col)
 
         if diagram[row][tachion_col] == ".":
             next_tachion_cols.add(tachion_col)
@@ -67,6 +67,41 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
+tachion_universe = dict()
+tachion_universe[start_pos] = 1
+row = 1
 
-print("Result part 2: ", result)  # 
+while row < len(lines):
+    next_tachion_universe = dict()
+
+    for tachion_col in tachion_universe.keys():
+        # print(tachion_col)
+
+        if diagram[row][tachion_col] == ".":
+            if tachion_col not in next_tachion_universe.keys(): 
+                next_tachion_universe[tachion_col] = tachion_universe[tachion_col]
+            else:
+                next_tachion_universe[tachion_col] += tachion_universe[tachion_col]
+        else:
+
+            if tachion_col-1 not in next_tachion_universe.keys():
+                next_tachion_universe[tachion_col-1] = tachion_universe[tachion_col]
+            else:
+                next_tachion_universe[tachion_col-1] += tachion_universe[tachion_col]
+
+            if tachion_col+1 not in next_tachion_universe.keys():
+                next_tachion_universe[tachion_col+1] = tachion_universe[tachion_col]
+            else:
+                next_tachion_universe[tachion_col+1] += tachion_universe[tachion_col]
+
+
+    tachion_universe = next_tachion_universe
+    # print(tachion_universe)
+    row += 1
+
+
+for universes in tachion_universe.values():
+    result += universes
+
+print("Result part 2: ", result)  # 135656430050438
 print("--- %s seconds ---" % (time.time() - start_time))
