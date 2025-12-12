@@ -51,7 +51,35 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
+# ok, so this the numbers are not always right aligned, which is annoying
+# and require going back to the original data before it was converted to 
+# a matrix of integers
 
+# get the positions of the operators -- that's where the numbers for each colum start
+column_starts = []
+operand_lines = np.array([list(line) for line in lines[:-1]])
 
-print("Result part 2: ", result)  # 
+for idx, el in enumerate(lines[-1]):
+    if el != " ":
+        column_starts.append(idx)
+
+# now let's collect the numbers
+
+for idx, column_start in enumerate(column_starts):
+    if idx < len(column_starts)-1:
+        col_end = column_starts[idx+1]-1 # isto falha para o último mas vamos ignorar por agora
+    else:
+       col_end = 4000 # or whatever
+
+    column = operand_lines[:, column_start:col_end].transpose()
+
+    vals = ','.join([''.join(row) for row in column]).split(",")
+    vals = [int(x) for x in vals]
+
+    if operators[idx] == "+":
+        result += np.sum(vals)
+    else:
+        result += math.prod(vals)
+
+print("Result part 2: ", result)  # 11643736116335
 print("--- %s seconds ---" % (time.time() - start_time))
