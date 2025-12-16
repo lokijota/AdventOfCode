@@ -23,6 +23,8 @@ Setup steps:
 - **Day 05**: Again the topic of ranges. Simple and fast. Could probably also have used https://pypi.org/project/portion/ again, but not worth it.
 - **Day 06**: Part 1 simple, part 2 also simple but somewhat annoying. I'm sure there's a cleaner way to do it, still execition time is miliseconds.
 - **Day 07**: The Tachyons one with the beam splitter. Second part felt more complicated than it is really, and also runs in ms times.
-- **Day 08**: This is essentially KNN (clustering). Spent some time with silly bugs, but the approach is simple. 22 secs part 1, 45 secs part w.
+- **Day 08**: This is essentially KNN (clustering). Spent some time with silly bugs, but the approach is simple. 22 secs part 1, 45 secs part 2.
+- **Day 09**: Part 1 is simple using a simple brute force approach, part 2 took me a LOT of work and it still takes 50mins to get to the result. Essentially I create a matrix based on all turn points (red tiles), then compress the map based on this information, then iterate on rectangles like in part 1 but on a much smaller (compressed) map. Use matplotlib Path to determine if something is inside the shape (is this cheating?)
+
 
 Also: coding in vscode using **vim**, for old-times sake.
