@@ -21,8 +21,19 @@ import math
 
 ## global variables
 
-with open('ch10/input.txt') as f:
+with open('ch10/sample.txt') as f:
     lines = f.read().splitlines()
+
+manual = dict()
+# [.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
+# The manual describes one machine per line. Each line contains a single indicator light diagram in [square brackets],
+# one or more button wiring schematics in (parentheses), and joltage requirements in {curly braces}.
+for line in lines:
+    parts = line.split(" ")
+    light_diagram = parts[0].removeprefix("[").removesuffix("]")
+    button_wirings = [list(map(int, x.removeprefix("(").removesuffix(")").split(","))) for x in parts[1:len(parts)-1]]
+    joltage_requirements = list(map(int, parts[-1].removeprefix("{").removesuffix("}").split(",")))
+    manual[light_diagram] = [button_wirings, joltage_requirements]
 
 ## functions
 
