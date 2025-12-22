@@ -25,7 +25,7 @@ Setup steps:
 - **Day 07**: The Tachyons one with the beam splitter. Second part felt more complicated than it is really, and also runs in ms times.
 - **Day 08**: This is essentially KNN (clustering). Spent some time with silly bugs, but the approach is simple. 22 secs part 1, 45 secs part 2.
 - **Day 09**: Part 1 is simple using a simple brute force approach, part 2 took me a LOT of work and it still takes 50mins to get to the result. Essentially I create a matrix based on all turn points (red tiles), then compress the map based on this information, then iterate on rectangles like in part 1 but on a much smaller (compressed) map. Use matplotlib Path to determine if something is inside the shape (is this cheating?)
-- **Day 10**: Part 1 with trees and my trusted `deque`, part 2 with `scipy.optimize.linprog`, using a variant of Simplex. I quickly realized the approach from part 1 didn't work in part 2, so went googling for mathematical approaches and Simplex led me to the right place. A couple of Stackoverflow answers plus the docs helped me figure it out. Part 1 takes under 2 seconds, part 2 takes about 0.1 sec.
-
+- **Day 10**: Part 1 with trees and my trusted `deque`, part 2 with `scipy.optimize.linprog`, using a variant of Simplex. I quickly realized the approach from part 1 didn't work in part 2, so went googling for mathematical approaches and Simplex led me to the right place. A couple of Stackoverflow answers plus the docs helped me figure it out. Part 1 takes under 2 seconds, part 2 takes about 0.1 sec. Didn't use this link but it has a summary of other approaches: https://medium.com/@chongjingting/4-ways-to-solve-linear-programming-in-python-b4af36b7894d .
+- **Day 11**: Part 1 simple and fast with a recursive approach (wouldn't work if there were loops or a non-directed graph).
 
 Also: coding in vscode using **vim**, for old-times sake.

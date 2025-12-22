@@ -21,7 +21,7 @@ import math
 
 ## global variables
 
-with open('ch10/input.txt') as f:
+with open('ch12/input.txt') as f:
     lines = f.read().splitlines()
 
 ## functions
