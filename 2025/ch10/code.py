@@ -7,16 +7,6 @@ from jotalibrary import *
 import numpy as np
 from collections import deque 
 from scipy.optimize import linprog
-# from itertools import groupby
-# import math
-# from collections import Counter
-# import sys
-# import re
-# import copy
-# from tqdm import tqdm
-# import random
-# import matplotlib.pyplot as plt
-# from matplotlib import path
 
 ## read data
 
