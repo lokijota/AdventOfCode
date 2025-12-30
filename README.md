@@ -10,5 +10,6 @@ Advent of Code challenges, years 2024+. Older solutions are in individual repos 
 
 [2024](2024/) - Again going for Python.
 
+[2025](2025/) - Again going for Python. 12 exercises only.
 
 *Credit where credit is due to Eric Wastl's great work creating the [Advent of Code](https://adventofcode.com/) since 2015*
