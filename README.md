@@ -2,6 +2,8 @@
 
 Advent of Code challenges, years 2024+. Older solutions are in individual repos until I have patience to migrate.
 
+[2021](2015/) - Started in December 2025 just to check out the old challenges. Python. Github copilot knows the solutions, had to turn the it off.
+
 [2021](https://github.com/lokijota/AdventOfCode2021) - Coded in C#. Made me realize how strict and verbose C# really is.
 
 [2022](https://github.com/lokijota/AdventOfCode2022) - Switch to Python3, and used the opportunity to learn the language.
