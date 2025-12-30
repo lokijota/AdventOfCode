@@ -16,8 +16,8 @@ Setup steps:
 
 # Notes on the execises
 
-- **Day 01**: 
+- **Day 01**: Ultra simple. After doing 2023-2025, this first day of the first year feels too simple.
+- **Day 02**: Also simple, just some arithmetic. Darn GH Copilt has been trained on the solutions, hate this crap.
 
-Another year completed! /happy.
 
 Also: coding in vscode using **vim**, for old-times sake.
