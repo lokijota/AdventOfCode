@@ -19,5 +19,6 @@ Setup steps:
 - **Day 01**: Ultra simple. After doing 2023-2025, this first day of the first year feels too simple.
 - **Day 02**: Also simple, just some arithmetic. Darn GH Copilt has been trained on the solutions, hate this crap.
 - **Day 03**: Simple with sets.
+- **Day 04**: I just used Python's `hashlib` and brute-forced it. There's probably a better way by reverse engineering MD5's formula.
 
 Also: coding in vscode using **vim**, for old-times sake.

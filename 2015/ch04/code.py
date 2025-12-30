@@ -4,6 +4,7 @@ import time
 sys.path.append(".") 
 from jotalibrary import *
 
+import hashlib
 # from itertools import batched
 # from itertools import groupby
 # import numpy as np
@@ -33,8 +34,20 @@ with open('ch04/input.txt') as f:
 start_time = time.time()
 result = 0
 
+result = 1
 
-print("Result part 1: ", result) # 
+while True:
+    s = "iwrupvqb" + str(result)
+    res = hashlib.md5(s.encode())
+
+    if res.hexdigest().startswith("00000"):
+        print(f"Solution is {result}")
+        print(res.hexdigest())
+        break
+
+    result += 1
+
+print("Result part 1: ", result) # 346386
 print("--- %s seconds ---" % (time.time() - start_time))
 
 ## part 2
@@ -42,7 +55,18 @@ print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 result = 0
 
+result = 1
 
+while True:
+    s = "iwrupvqb" + str(result)
+    res = hashlib.md5(s.encode())
 
-print("Result part 2: ", result)  # 
+    if res.hexdigest().startswith("000000"):
+        print(f"Solution is {result}")
+        print(res.hexdigest())
+        break
+
+    result += 1
+
+print("Result part 2: ", result)  # 9958218
 print("--- %s seconds ---" % (time.time() - start_time))
