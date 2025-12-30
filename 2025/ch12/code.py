@@ -21,7 +21,7 @@ import math
 
 ## global variables
 
-with open('ch12/sample.txt') as f:
+with open('ch12/input.txt') as f:
     lines = f.read().splitlines()
 
 reading_shapes = True
@@ -62,6 +62,7 @@ result = 0
 
 # print some statistics
 fit_for_sure = 0
+doesnt_fit_for_sure = 0
 
 for box in boxes:
     rect_area = box[0][0] * box[0][1]
@@ -73,17 +74,22 @@ for box in boxes:
     for idx, part_count in enumerate(box[1:]):
         part_area += part_count * counts[idx]
     
+    if rect_area-part_area<0:
+        doesnt_fit_for_sure += 1
+
     print(f"Rectangle area: {rect_area}, Parts area={part_area}, diff = {rect_area-part_area}") 
+
     print(f"    3x3 part area= {part_count_area}, enclosing area 3x3= {three_multiple_box_area}, it fits for sure={part_count_area<= three_multiple_box_area}")
     if part_count_area<=three_multiple_box_area:
         fit_for_sure += 1
 
 
-print(f"Total fits: {len(boxes)}, total fit for sure: {fit_for_sure}")
+print(f"Total fits: {len(boxes)}, total fit for sure: {fit_for_sure}, total doesn't fit for sure: {doesnt_fit_for_sure}, to be analysed: {len(boxes)-fit_for_sure-doesnt_fit_for_sure}")
 
+# the delta above = 0 on the full input data set, so no need to play tetris with this... (!) tricky. However in the sample, this doesn't work. Trickster!
+result = fit_for_sure
 
-
-print("Result part 1: ", result) # 
+print("Result part 1: ", result) #  587
 print("--- %s seconds ---" % (time.time() - start_time))
 
 ## part 2
